@@ -5,7 +5,7 @@ OBJ = $(addsuffix .o,$(basename $(SRC)))
 DEP = sdl2
 
 CFLAG = -Iinclude `pkg-config $(DEP) --cflags`
-LFLAG = `pkg-config $(DEP) --libs`
+LFLAG = `pkg-config $(DEP) --libs` -fopenmp
 EXE   = gol
 
 .SUFFIXES: .o .c
