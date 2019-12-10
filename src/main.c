@@ -36,11 +36,7 @@ int main (int argc, char** argv)
 
 # pragma omp parallel single
   {
-    /* start thread to print the states onto the window here */
-#   pragma omp task
     foo();
-    /* call function to compute gol states here */
-    gol();
   }
   
  renderer_err:
@@ -60,17 +56,20 @@ void gol_print (int y, int x)
   SDL_RenderFillRect(grenderer, &r);
 }
 
-char** cur_state;
+static void mtxfree (char**, int);
 
 void foo ()
 {
+  char** cur_state;
+  char** prv_state;
   SDL_Event e;
   char mouse_pressed = 0;
+  char paused        = 1;
   int x, y;
 
-  cur_state = calloc(150, sizeof(char*));
-  for (int i = 0; i < 150; i++)
-    cur_state[i] = calloc(200, sizeof(char));
+  cur_state = calloc(152, sizeof(char*));
+  for (int i = 0; i <= 152; i++)
+    cur_state[i] = calloc(202, sizeof(char));
   
   for (;;) {
     while (SDL_PollEvent(&e)) {
@@ -84,13 +83,29 @@ void foo ()
       case SDL_MOUSEBUTTONUP:
 	mouse_pressed = 0;
 	break;
+      case SDL_KEYDOWN:
+	switch (e.key.keysym.sym) {
+	case SDLK_SPACE:
+	  paused ^= 1;
+	  if (paused)
+	    printf("paused\n");
+	  else
+	    printf("unpaused\n");
+	  break;
+	}
+	break;
       }
     }
       
     SDL_SetRenderDrawColor(grenderer, 255, 255, 255, 255);
     SDL_RenderClear(grenderer);
-    /* read game states and print to screen */
 
+    if (!paused) {
+      prv_state = cur_state;
+      cur_state = gol_next_state(cur_state, 200, 150);
+      mtxfree(prv_state, 152);
+    }
+    
     if (mouse_pressed) {
       SDL_GetMouseState(&x, &y);
       printf("mouse pressed, x: %d, y: %d\n", x, y);
@@ -98,14 +113,23 @@ void foo ()
       cur_state[y/4][x/4] = 1;
     }
 
-    for (int i = 0; i < 150; i++) {
-      for (int j = 0; j < 200; j++) {
+    for (int i = 1; i <= 150; i++) {
+      for (int j = 1; j <= 200; j++) {
 	if (cur_state[i][j])
-	  gol_print(i, j);
+	  gol_print(i-1, j-1);
       }
     }
     
     SDL_RenderPresent(grenderer);
     
   }
+}
+
+static void mtxfree (char** m, int h)
+{
+  int i;
+
+  for (i = 0; i < h; i++)
+    free(m[i]);
+  free(m);
 }

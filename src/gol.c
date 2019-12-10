@@ -1,10 +1,45 @@
 #include "gol.h"
 
 #include <omp.h>
+#include <stdlib.h>
 
-void gol (void)
+static int livesp (char** state, int y, int x);
+
+char** gol_next_state (char** start, int w, int h)
 {
+  char** next;
+  int i, j;
+
+  next = calloc(h + 2, sizeof(char*));
+  for (i = 0; i <= h+2; i++)
+    next[i] = calloc(w + 2, sizeof(char));
+
+  for (i = 1; i <= h+1; i++)
+    for (j = 1; j <= w+1; j++)
+      next[i][j] = livesp(start, i, j);
   
+  return next;
+}
+
+static int livesp (char** state, int y, int x)
+{
+  int acc = 0;
+  int i, j;
+
+  for (i = -1; i <= 1; i++)
+    for (j = -1; j <= 1; j++)
+      if (state[y+i][x+j])
+	acc++;
+
+  if (state[y][x] &&
+      acc > 2 &&
+      acc < 5) {
+    return 1;
+  } else if (acc == 3) {
+    return 1;
+  } else {
+    return 0;
+  }
 }
 /*
 

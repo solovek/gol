@@ -1,6 +1,6 @@
 #ifndef GOL_H
 #define GOL_H
 
-void gol (void);
+char** gol_next_state (char**, int w, int h);
 
 #endif /* GOL_H */
