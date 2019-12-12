@@ -48,6 +48,7 @@ int main (int argc, char** argv)
   return 0;
 }
 
+//função para printar os pontos na tela
 void gol_print (int y, int x)
 {
   SDL_Rect r = {x * 4, y * 4, 4, 4};
@@ -69,6 +70,7 @@ void foo ()
 
   cur_state = calloc(152, sizeof(char*));
 
+//
 #pragma omp parallel for
   for (int i = 0; i <= 152; i++)
     cur_state[i] = calloc(202, sizeof(char));
@@ -77,7 +79,7 @@ void foo ()
     while (SDL_PollEvent(&e)) {
       switch (e.type) {
       case SDL_QUIT:
-	/* TODO tell the other thread it has stopped later */
+	//Testa se o mouse foi apertado
 	return;
       case SDL_MOUSEBUTTONDOWN:
 	mouse_pressed = 1;
@@ -98,7 +100,8 @@ void foo ()
 	break;
       }
     }
-      
+    
+    //Pinta a tela de branco
     SDL_SetRenderDrawColor(grenderer, 255, 255, 255, 255);
     SDL_RenderClear(grenderer);
 
@@ -108,6 +111,7 @@ void foo ()
       mtxfree(prv_state, 152);
     }
     
+    //Pega a posição do mouse quando clica
     if (mouse_pressed) {
       SDL_GetMouseState(&x, &y);
       printf("mouse pressed, x: %d, y: %d\n", x, y);

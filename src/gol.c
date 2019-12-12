@@ -5,6 +5,7 @@
 
 static int livesp (char** state, int y, int x);
 
+//cria a matrix para o próximo estado
 char** gol_next_state (char** start, int w, int h)
 {
   char** next;
@@ -26,12 +27,13 @@ static int livesp (char** state, int y, int x)
 {
   int acc = 0;
   int i, j;
+//testa quantos vizinhos, incluindo ele próprio, estão vivos
 # pragma omp parallel for collapse(2)
   for (i = -1; i <= 1; i++)
     for (j = -1; j <= 1; j++)
       if (state[y+i][x+j])
 	acc++;
-
+//aplica as regras do jogo
   if (state[y][x] &&
       acc > 2 &&
       acc < 5) {
