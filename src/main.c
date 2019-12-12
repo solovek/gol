@@ -68,6 +68,8 @@ void foo ()
   int x, y;
 
   cur_state = calloc(152, sizeof(char*));
+
+#pragma omp parallel for
   for (int i = 0; i <= 152; i++)
     cur_state[i] = calloc(202, sizeof(char));
   
@@ -112,7 +114,7 @@ void foo ()
       //gol_print(y / 4, x / 4);
       cur_state[y/4][x/4] = 1;
     }
-
+#pragma omp taskloop collapse(2)
     for (int i = 1; i <= 150; i++) {
       for (int j = 1; j <= 200; j++) {
 	if (cur_state[i][j])
@@ -128,7 +130,7 @@ void foo ()
 static void mtxfree (char** m, int h)
 {
   int i;
-
+#pragma omp parallel for
   for (i = 0; i < h; i++)
     free(m[i]);
   free(m);

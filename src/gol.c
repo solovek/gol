@@ -11,9 +11,10 @@ char** gol_next_state (char** start, int w, int h)
   int i, j;
 
   next = calloc(h + 2, sizeof(char*));
+ #pragma omp parallel for
   for (i = 0; i <= h+2; i++)
     next[i] = calloc(w + 2, sizeof(char));
-# pragma omp parallel for
+# pragma omp parallel for collapse(2)
   for (i = 1; i <= h+1; i++)
     for (j = 1; j <= w+1; j++)
       next[i][j] = livesp(start, i, j);
@@ -25,7 +26,7 @@ static int livesp (char** state, int y, int x)
 {
   int acc = 0;
   int i, j;
-
+# pragma omp parallel for collapse(2)
   for (i = -1; i <= 1; i++)
     for (j = -1; j <= 1; j++)
       if (state[y+i][x+j])
